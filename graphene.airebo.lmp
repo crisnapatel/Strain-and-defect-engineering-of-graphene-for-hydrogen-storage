@@ -1,0 +1,71 @@
+# AIREBO; graphene sheet relaxation at 77 K, 10 bar for 250 ps
+
+variable        file string graphene 
+variable        purpose string nvt_eql
+log             ${file}_${purpose}_${run}.log
+variable        temp_i equal 77.0 
+variable        temp_f equal 77.0
+variable        press_i equal 10
+variable        press_f equal 10 
+
+units               metal
+atom_style          atomic
+
+read_data           min_${file}_462.lmpdat
+
+neighbor            0.5 bin
+neigh_modify        delay 5 every 1
+
+pair_style          airebo 3.0 1 1
+pair_coeff          * * CH.airebo C
+
+variable           my_timestep equal 0.001
+timestep           ${my_timestep}
+
+# Output frequancy
+thermo             1000 #000
+variable           data_write_frq equal 1000 
+
+compute 0 all pair airebo
+variable           REBO equal c_0[1]
+variable           LJ   equal c_0[2]
+variable           TORSION equal c_0[3]
+
+thermo_style       custom step time temp press density ndanger pe ke etotal evdwl ecoul epair v_REBO v_LJ v_TORSION enthalpy ecouple econserve
+
+velocity           all create ${temp_i} 4928459 rot yes mom yes dist gaussian
+
+# NVT 
+fix                 my_nvt all nvt temp ${temp_i} ${temp_f} $(100*dt)
+compute             1 all pe/atom
+restart        	    ${data_write_frq}  ${file}_${purpose}_${run}_a.rst ${file}_${purpose}_${run}_b.rst
+dump                nvt_eq_dump all custom ${data_write_frq} ${file}_${purpose}_${run}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz c_1 ix iy iz 
+dump_modify	        nvt_eq_dump sort id
+
+run                 250000 # 250 ps                 
+
+unfix               my_nvt
+undump              nvt_eq_dump
+reset_timestep      0
+write_data          ${file}_${purpose}_${run}.lmpdat
+# Print message when the process is finished
+print "Finished nvt equilibration run."
+
+
+# NPT
+variable            purpose_2 string npt_eql
+
+fix                  my_npt all npt temp ${temp_f} ${temp_f} $(100*dt) iso ${press_i} ${press_f} $(1000*dt)
+compute              2 all pe/atom
+restart              ${data_write_frq}  ${file}_${purpose_2}_${run}_a.rst ${file}_${purpose_2}_${run}_b.rst
+dump                 npt_eq_dump all custom ${data_write_frq} ${file}_${purpose_2}_${run}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz c_2 ix iy iz 
+dump_modify	         npt_eq_dump sort id
+
+run                  250000 # 250 ps
+
+unfix                my_npt
+undump               npt_eq_dump
+write_data           ${file}_${purpose_2}_${run}.lmpdat
+
+# Print message when the entire process is finished
+print "Finished npt equilibration run."

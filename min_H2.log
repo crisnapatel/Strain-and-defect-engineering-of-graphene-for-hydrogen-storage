@@ -1,0 +1,108 @@
+# The file name is self-explanatory
+dimension       3
+boundary        p p p
+units           metal
+
+atom_style      atomic
+read_data       ${file}.lmpdat
+read_data       H2.lmpdat
+Reading data file ...
+  orthogonal box = (-26.493052 -24.660999 -50) to (123.50695 125.339 50)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2 atoms
+  read_data CPU = 0.002 seconds
+
+pair_style      airebo 3.0 1 1
+pair_coeff      * * CH.airebo H
+Reading airebo potential file CH.airebo with DATE: 2011-10-25
+
+neighbor        0.5 bin
+neigh_modify    every 1 delay 0 check yes
+
+
+# Energy Minimization
+dump ${purpose}_dump all custom 1 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 min_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 min_H2.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump_modify  ${purpose}_dump sort id
+dump_modify  min_dump sort id
+min_style cg
+minimize 0 1.0e-8 20000 20000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282–-3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10.7
+  ghost atom cutoff = 10.7
+  binsize = 5.35, bins = 29 29 19
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair airebo, perpetual
+      attributes: full, newton on, ghost
+      pair build: full/bin/ghost
+      stencil: full/ghost/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 5.106 | 5.106 | 5.106 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -4.5063016      0             -4.5063016     -7.618901e-10 
+         1   0             -4.5063016      0             -4.5063016      2.0447818e-14
+Loop time of 4.387e-05 on 1 procs for 1 steps with 2 atoms
+
+9.1% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = force tolerance
+  Energy initial, next-to-last, final = 
+     -4.50630159909533  -4.50630159909533  -4.50630159909533
+  Force two-norm initial, final = 6.0842063e-09 1.6328962e-13
+  Force max component initial, final = 4.3021835e-09 1.1546319e-13
+  Final line search alpha, max atom move = 1 1.1546319e-13
+  Iterations, force evaluations = 1 2
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1e-06      | 1e-06      | 1e-06      |   0.0 |  2.28
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 4.3e-07    | 4.3e-07    | 4.3e-07    |   0.0 |  0.98
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 4.244e-05  |            |       | 96.74
+
+Nlocal:              2 ave           2 max           2 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:            2 ave           2 max           2 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 2
+Ave neighs/atom = 1
+Neighbor list builds = 0
+Dangerous builds = 0
+write_data ${purpose}_${file}_*.lmpdat
+write_data min_${file}_*.lmpdat
+write_data min_H2_*.lmpdat
+System init for write_data ...
+Total wall time: 0:00:00

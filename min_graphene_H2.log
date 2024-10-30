@@ -1,0 +1,110 @@
+# The file name is self-explanatory
+dimension       3
+boundary        p p p
+units           metal
+
+atom_style      atomic
+read_data       ${file}.lmpdat
+read_data       graphene_H2.lmpdat
+Reading data file ...
+  orthogonal box = (-26.493052 -24.660999 -50) to (123.50695 125.339 50)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  3938 atoms
+  read_data CPU = 0.007 seconds
+
+pair_style      airebo 3.0 1 1
+pair_coeff      * * CH.airebo C H
+Reading airebo potential file CH.airebo with DATE: 2011-10-25
+
+neighbor        0.5 bin
+neigh_modify    every 1 delay 0 check yes
+
+
+# Energy Minimization
+
+
+dump ${purpose}_dump all custom 1 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 min_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 1 min_graphene_H2.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump_modify  ${purpose}_dump sort id
+dump_modify  min_dump sort id
+min_style cg
+minimize 0 1.0e-8 20000 20000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282–-3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10.7
+  ghost atom cutoff = 10.7
+  binsize = 5.35, bins = 29 29 19
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair airebo, perpetual
+      attributes: full, newton on, ghost
+      pair build: full/bin/ghost
+      stencil: full/ghost/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 7.043 | 7.043 | 7.043 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -28782.942      0             -28782.942     -3.4074266    
+     10002   0             -28792.591      0             -28792.591     -0.0069332961 
+Loop time of 360.643 on 1 procs for 10002 steps with 3938 atoms
+
+98.4% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+      -28782.941910128  -28792.5908215412  -28792.5908215459
+  Force two-norm initial, final = 11.089198 0.00058392664
+  Force max component initial, final = 6.2873255 5.2734318e-05
+  Final line search alpha, max atom move = 1 5.2734318e-05
+  Iterations, force evaluations = 10002 20000
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 287.94     | 287.94     | 287.94     |   0.0 | 79.84
+Neigh   | 0.36516    | 0.36516    | 0.36516    |   0.0 |  0.10
+Comm    | 0.004801   | 0.004801   | 0.004801   |   0.0 |  0.00
+Output  | 71.632     | 71.632     | 71.632     |   0.0 | 19.86
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.6985     |            |       |  0.19
+
+Nlocal:           3938 ave        3938 max        3938 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       505776 ave      505776 max      505776 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 505776
+Ave neighs/atom = 128.43474
+Neighbor list builds = 90
+Dangerous builds = 0
+write_data ${purpose}_${file}_*.lmpdat
+write_data min_${file}_*.lmpdat
+write_data min_graphene_H2_*.lmpdat
+System init for write_data ...
+Total wall time: 0:06:00

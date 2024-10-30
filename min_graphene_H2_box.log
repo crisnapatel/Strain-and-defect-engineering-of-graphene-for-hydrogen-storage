@@ -1,0 +1,110 @@
+# The log file is written by min_graphene_H2_box.airebo.lmp
+dimension       3
+boundary        p p p
+units           metal
+
+atom_style      atomic
+read_data       ${file}.lmpdat
+read_data       graphene_H2_box.lmpdat
+Reading data file ...
+  orthogonal box = (-1.0081777 0.82387484 -33.010084) to (98.022074 99.854126 33.010084)
+  2 by 2 by 1 MPI processor grid
+  reading atoms ...
+  9994 atoms
+  read_data CPU = 0.015 seconds
+
+pair_style      airebo 3.0 1 1
+pair_coeff      * * CH.airebo C H
+Reading airebo potential file CH.airebo with DATE: 2011-10-25
+
+neighbor        0.5 bin
+neigh_modify    every 1 delay 0 check yes
+
+
+# Energy Minimization
+dump ${purpose}_dump all custom 100 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 100 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 100 min_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump min_dump all custom 100 min_graphene_H2_box.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump_modify  ${purpose}_dump sort id
+dump_modify  min_dump sort id
+min_style cg
+minimize 0 1.0e-8 20000 20000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282–-3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Last active /omp style is pair_style airebo/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10.7
+  ghost atom cutoff = 10.7
+  binsize = 5.35, bins = 19 19 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair airebo/omp, perpetual
+      attributes: full, newton on, ghost, omp
+      pair build: full/bin/ghost/omp
+      stencil: full/ghost/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 5.948 | 6.139 | 6.33 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0              263060.7       0              263060.7       274283.54    
+      2654   0             -41590.042      0             -41590.042     -43.721179    
+Loop time of 111.053 on 4 procs for 2654 steps with 9994 atoms
+
+99.1% CPU use with 4 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+      263060.696091811  -41590.0337402606  -41590.0419206594
+  Force two-norm initial, final = 946524.87 8.1295932
+  Force max component initial, final = 28801.798 4.9946919
+  Final line search alpha, max atom move = 0.0011138462 0.0055633184
+  Iterations, force evaluations = 2654 20002
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 102.23     | 104.75     | 108.88     |  24.5 | 94.33
+Neigh   | 0.1244     | 0.12853    | 0.13578    |   1.2 |  0.12
+Comm    | 1.4274     | 5.5101     | 7.9812     | 105.6 |  4.96
+Output  | 0.12928    | 0.13993    | 0.14991    |   2.0 |  0.13
+Modify  | 0.0826     | 0.094935   | 0.10818    |   4.0 |  0.09
+Other   |            | 0.428      |            |       |  0.39
+
+Nlocal:         2498.5 ave        2603 max        2395 min
+Histogram: 2 0 0 0 0 0 0 0 0 2
+Nghost:        3850.75 ave        3956 max        3750 min
+Histogram: 2 0 0 0 0 0 0 0 0 2
+Neighs:              0 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+FullNghs:       284457 ave      293392 max      275669 min
+Histogram: 1 1 0 0 0 0 0 0 1 1
+
+Total # of neighbors = 1137828
+Ave neighs/atom = 113.85111
+Neighbor list builds = 27
+Dangerous builds = 0
+write_data ${purpose}_${file}_*.lmpdat
+write_data min_${file}_*.lmpdat
+write_data min_graphene_H2_box_*.lmpdat
+System init for write_data ...
+Last active /omp style is pair_style airebo/omp
+Total wall time: 0:01:51

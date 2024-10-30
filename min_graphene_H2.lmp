@@ -1,0 +1,25 @@
+# For energy minimization of a system having single monolayer graphene sheet and one H2 molecule  (graphene_H2.lmpdat)
+variable file string graphene_H2
+variable purpose string min
+log             ${purpose}_${file}.log
+
+dimension       3
+boundary        p p p
+units           metal
+
+atom_style      atomic
+read_data       ${file}.lmpdat
+
+pair_style      airebo 3.0 1 1
+pair_coeff      * * CH.airebo C H
+
+neighbor        0.5 bin
+neigh_modify    every 1 delay 0 check yes
+
+
+# Energy Minimization
+dump ${purpose}_dump all custom 100 ${purpose}_${file}.lammpstrj id type x y z xu yu zu vx vy vz fx fy fz ix iy iz
+dump_modify  ${purpose}_dump sort id
+min_style cg
+minimize 0 1.0e-8 20000 20000
+write_data ${purpose}_${file}_*.lmpdat
